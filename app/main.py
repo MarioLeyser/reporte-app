@@ -2,9 +2,123 @@ import streamlit as st
 import os
 import base64
 import time
+import json
 from PIL import Image
 from datetime import datetime, date
 import config
+
+
+# ────────────────────────────────────────────────
+# AUTOSAVE LOCAL (JSON)
+# ────────────────────────────────────────────────
+LOCAL_DRAFT_PATH = os.path.join("outputs", "draft_local.json")
+
+def save_local_draft():
+    """Guarda el estado actual del formulario en un JSON local.
+    Se llama automáticamente en cada render del formulario.
+    Solo guarda texto/fechas/equipos (NO bytes de fotos por tamaño).
+    """
+    try:
+        os.makedirs("outputs", exist_ok=True)
+        ss = st.session_state
+        draft = {
+            "saved_at": datetime.now().isoformat(),
+            "form_data": {
+                "actividad":       ss.get("f_actividad", ""),
+                "tipo_actividad":  ss.get("f_tipo", "Mantenimiento"),
+                "lugar":           ss.get("f_lugar", ""),
+                "fecha_inicio":    ss.get("f_fi", date.today()).isoformat() if hasattr(ss.get("f_fi", date.today()), 'isoformat') else str(ss.get("f_fi", "")),
+                "fecha_fin":       ss.get("f_ff", date.today()).isoformat() if hasattr(ss.get("f_ff", date.today()), 'isoformat') else str(ss.get("f_ff", "")),
+                "personal":        ss.get("f_pers", ""),
+                "cliente":         ss.get("f_cli", ""),
+                "estado":          ss.get("f_est", "Culminado"),
+                "conformidad":     ss.get("f_conf", "Conforme"),
+                "supervisor":      ss.get("f_sup", ""),
+                "codigo_reporte":  ss.get("f_cod", ""),
+                "nombre_reporte":  ss.get("f_nom", ""),
+                "total_dias":      ss.get("f_td", 1),
+                "dia_actual":      ss.get("f_da", 1),
+                "avance_real":     ss.get("f_ar", 0.0),
+                "resumen":         ss.get("f_resumen", ""),
+                "observaciones":   ss.get("f_obs", ""),
+                "conclusiones":    ss.get("f_conc", ""),
+            },
+            "equipos": ss.get("equipos_list", []),
+            "cloud_photos": [
+                {"name": p["name"], "caption": p.get("caption", ""),
+                 "date": p["date"].isoformat() if hasattr(p.get("date"), 'isoformat') else str(p.get("date", ""))}
+                for p in ss.get("form_photos", []) if p.get("type") == "cloud"
+            ]
+        }
+        with open(LOCAL_DRAFT_PATH, "w", encoding="utf-8") as f:
+            json.dump(draft, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[autosave] Error guardando borrador local: {e}")
+
+
+def load_local_draft():
+    """Carga borrador local al session_state si existe.
+    Retorna True si cargó datos, False si no hay nada.
+    """
+    try:
+        if not os.path.exists(LOCAL_DRAFT_PATH):
+            return False
+        with open(LOCAL_DRAFT_PATH, "r", encoding="utf-8") as f:
+            draft = json.load(f)
+        fd = draft.get("form_data", {})
+        ss = st.session_state
+        ss["f_actividad"]  = fd.get("actividad", "")
+        ss["f_tipo"]       = fd.get("tipo_actividad", "Mantenimiento")
+        ss["f_lugar"]      = fd.get("lugar", "")
+        ss["f_pers"]       = fd.get("personal", "")
+        ss["f_cli"]        = fd.get("cliente", "")
+        ss["f_est"]        = fd.get("estado", "Culminado")
+        ss["f_conf"]       = fd.get("conformidad", "Conforme")
+        ss["f_sup"]        = fd.get("supervisor", "")
+        ss["f_cod"]        = fd.get("codigo_reporte", "")
+        ss["f_nom"]        = fd.get("nombre_reporte", "")
+        ss["f_td"]         = fd.get("total_dias", 1)
+        ss["f_da"]         = fd.get("dia_actual", 1)
+        ss["f_ar"]         = float(fd.get("avance_real", 0.0))
+        ss["f_resumen"]    = fd.get("resumen", "")
+        ss["f_obs"]        = fd.get("observaciones", "")
+        ss["f_conc"]       = fd.get("conclusiones", "")
+        try:
+            ss["f_fi"] = date.fromisoformat(fd.get("fecha_inicio", date.today().isoformat()))
+            ss["f_ff"] = date.fromisoformat(fd.get("fecha_fin",    date.today().isoformat()))
+        except Exception:
+            pass
+        # Equipos
+        if draft.get("equipos"):
+            ss["equipos_list"] = draft["equipos"]
+        # Fotos de nube
+        cloud_photos = draft.get("cloud_photos", [])
+        if cloud_photos:
+            existing_cloud_ids = {p["name"] for p in ss.get("form_photos", []) if p.get("type") == "cloud"}
+            for cp in cloud_photos:
+                if cp["name"] not in existing_cloud_ids:
+                    ss.setdefault("form_photos", []).append({
+                        "id":      f"cloud_restored_{cp['name']}",
+                        "type":    "cloud",
+                        "name":    cp["name"],
+                        "caption": cp.get("caption", ""),
+                        "date":    date.fromisoformat(cp["date"]) if cp.get("date") else date.today()
+                    })
+        ss["local_draft_loaded"] = True
+        ss["local_draft_saved_at"] = draft.get("saved_at", "")
+        return True
+    except Exception as e:
+        print(f"[autosave] Error cargando borrador local: {e}")
+        return False
+
+
+def delete_local_draft():
+    """Elimina el borrador local después de generar el PDF final."""
+    try:
+        if os.path.exists(LOCAL_DRAFT_PATH):
+            os.remove(LOCAL_DRAFT_PATH)
+    except Exception:
+        pass
 
 
 # --- CACHING DE NUBE ---
@@ -255,6 +369,12 @@ if "current_user" not in st.session_state:
     st.session_state.current_user = {"username": "admin", "nombre": "Administrador"}
 if "login_error" not in st.session_state:
     st.session_state.login_error = False
+
+# ── Cargar borrador local al iniciar (solo una vez por sesión) ──
+if "local_draft_loaded" not in st.session_state:
+    _had_draft = load_local_draft()
+    if not _had_draft:
+        st.session_state.local_draft_loaded = False
 
 if "app_mode" not in st.session_state:
     st.session_state.app_mode = "inicio"  # "inicio" | "subida_rapida" | "reporte"
@@ -1110,6 +1230,17 @@ def render_formulario():
     with st.expander("📝 Conclusiones y Observaciones"):
         observaciones = st.text_area("Observaciones", height=100, key="f_obs")
         conclusiones = st.text_area("Conclusiones", height=100, key="f_conc")
+
+    # ── AUTOSAVE LOCAL (se ejecuta en cada render del formulario) ──
+    save_local_draft()
+    _saved_at = st.session_state.get("local_draft_saved_at", "")
+    _ts = datetime.now().strftime("%H:%M:%S")
+    st.markdown(
+        f'<p style="font-size:11px; color:#94a3b8; text-align:right; margin:0;">'
+        f'💾 Borrador guardado localmente · {_ts}</p>',
+        unsafe_allow_html=True
+    )
+    st.session_state["local_draft_saved_at"] = _ts
 
     # ── Botón Vista Previa (Móvil) ──
     st.markdown("---")

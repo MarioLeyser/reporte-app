@@ -12,3 +12,4 @@ venv/
 tunnel.log
 debug_check*.txt
 .idea/
+# NO ignorar draft_local.json - outputs/ ya lo cubre

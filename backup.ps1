@@ -21,10 +21,23 @@ $status = git status --short
 
 if ($status -eq "") {
     Write-Host "✅ No hay cambios nuevos desde el ultimo backup." -ForegroundColor Yellow
-} else {
+}
+else {
     git commit -m $Message
     Write-Host "✅ Backup guardado exitosamente!" -ForegroundColor Green
     Write-Host ""
     Write-Host "📋 Archivos guardados:" -ForegroundColor White
     git show --stat HEAD
+
+    # Subir a GitHub
+    Write-Host ""
+    Write-Host "☁️  Subiendo a GitHub..." -ForegroundColor Cyan
+    $pushResult = git push origin main 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✅ Subido a GitHub correctamente!" -ForegroundColor Green
+    }
+    else {
+        Write-Host "⚠️  No se pudo subir a GitHub (puede que no haya internet). El backup local sí se guardó." -ForegroundColor Yellow
+        Write-Host $pushResult -ForegroundColor DarkGray
+    }
 }
