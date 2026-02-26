@@ -218,6 +218,10 @@ def load_custom_css():
         font-weight: 600;
     }
 
+    .main {
+        line-height: 1.5 !important;
+    }
+
     /* === RESPONSIVE: Pantallas <= 768px === */
     @media (max-width: 768px) {
         .block-container {
@@ -226,10 +230,10 @@ def load_custom_css():
             padding-top: 1rem;
         }
 
-        /* Columnas en stack vertical */
+        /* Columnas en stack vertical con espacio */
         [data-testid="stHorizontalBlock"] {
             flex-direction: column !important;
-            gap: 0 !important;
+            gap: 1.2rem !important;
         }
 
         [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {

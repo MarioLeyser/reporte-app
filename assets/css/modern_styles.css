@@ -40,6 +40,7 @@
 .main {
     background-color: var(--bg) !important;
     font-family: 'Inter', sans-serif !important;
+    line-height: 1.5 !important;
 }
 
 [data-testid="stHeader"] {
@@ -80,7 +81,7 @@ h6,
     font-family: 'Inter', sans-serif !important;
     color: var(--text-primary) !important;
     font-weight: 700 !important;
-    letter-spacing: -0.02em;
+    letter-spacing: normal !important;
 }
 
 p,
@@ -493,8 +494,9 @@ div:has(> div > #bottom-nav-marker) button:active {
 .stitch-recent-report-title {
     margin: 0;
     font-size: 14px;
-    font-weight: 700;
-    color: var(--text-primary);
+    color: #64748B;
+    font-weight: 500;
+    letter-spacing: normal !important;
 }
 
 .stitch-recent-report-meta {
