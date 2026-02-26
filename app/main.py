@@ -1,5 +1,10 @@
 import streamlit as st
 import os
+import sys
+
+# Agregar el directorio raíz al PATH para encontrar config.py y otros módulos
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import base64
 import time
 import json
