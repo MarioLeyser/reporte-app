@@ -1,0 +1,845 @@
+/*
+   Stitch Design System — reporte_app
+   Basado en los mockups HTML de la carpeta /stitch
+   Paleta: primary #0056b2 | bg #f5f7f8 | fuente Inter
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+/* ─── Variables de diseño ───────────────────────────────── */
+:root {
+    --primary: #0056b2;
+    --primary-light: rgba(0, 86, 178, 0.1);
+    --primary-shadow: rgba(0, 86, 178, 0.2);
+    --bg: #f5f7f8;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --border-dark: #cbd5e1;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --success: #16a34a;
+    --success-bg: #dcfce7;
+    --warning: #b45309;
+    --warning-bg: #fef3c7;
+    --error: #dc2626;
+    --error-bg: #fee2e2;
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-primary: 0 8px 24px rgba(0, 86, 178, 0.18);
+}
+
+/* ─── Fondo principal ────────────────────────────────────── */
+[data-testid="stApp"],
+[data-testid="stAppViewContainer"],
+.main {
+    background-color: var(--bg) !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+[data-testid="stHeader"] {
+    background-color: var(--bg) !important;
+    display: none !important;
+}
+
+/* ─── Ocultar elementos de Streamlit innecesarios ───────── */
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+header {
+    visibility: hidden;
+}
+
+/* ─── Contenedor principal ───────────────────────────────── */
+.block-container {
+    padding-top: 1.5rem !important;
+    padding-bottom: 3rem !important;
+    max-width: 900px !important;
+}
+
+/* ─── Tipografía ─────────────────────────────────────────── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.stMarkdown h1,
+.stMarkdown h2,
+.stMarkdown h3 {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--text-primary) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+}
+
+p,
+label,
+span,
+[data-testid="stWidgetLabel"] p,
+[data-testid="stWidgetLabel"] label,
+.stMarkdown p {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--text-primary) !important;
+}
+
+/* ─── Botones ────────────────────────────────────────────── */
+.stButton>button {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    border-radius: var(--radius) !important;
+    min-height: 44px !important;
+    font-size: 14px !important;
+    transition: all 0.18s ease !important;
+    border: 1.5px solid var(--border) !important;
+    background: var(--surface) !important;
+    color: var(--text-primary) !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.stButton>button:hover {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    box-shadow: var(--shadow) !important;
+    transform: translateY(-1px) !important;
+}
+
+.stButton>button[kind="primary"] {
+    background: var(--primary) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: var(--shadow-primary) !important;
+    min-height: 50px !important;
+    font-size: 15px !important;
+}
+
+.stButton>button[kind="primary"]:hover {
+    background: #004a99 !important;
+    box-shadow: 0 12px 30px rgba(0, 86, 178, 0.28) !important;
+    transform: translateY(-2px) !important;
+    color: #ffffff !important;
+}
+
+/* ─── Inputs ─────────────────────────────────────────────── */
+.stTextInput>div>div>input,
+.stTextArea>div>div>textarea,
+.stDateInput>div>div>input {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+    color: var(--text-primary) !important;
+    background: var(--surface) !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    padding: 10px 14px !important;
+    transition: border-color 0.15s ease !important;
+}
+
+.stTextInput>div>div>input:focus,
+.stTextArea>div>div>textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px var(--primary-light) !important;
+    outline: none !important;
+}
+
+.stSelectbox [data-baseweb="select"]>div {
+    font-family: 'Inter', sans-serif !important;
+    background: var(--surface) !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Labels */
+.stTextInput label,
+.stTextArea label,
+.stSelectbox label,
+.stDateInput label,
+.stNumberInput label,
+.stRadio label,
+[data-testid="stWidgetLabel"] {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: var(--text-secondary) !important;
+}
+
+/* Radio buttons */
+[data-testid="stRadio"]>div {
+    gap: 8px;
+}
+
+/* ─── Expanders ──────────────────────────────────────────── */
+[data-testid="stExpander"],
+.stExpander {
+    background: var(--surface) !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-sm) !important;
+    margin-bottom: 1rem !important;
+    overflow: hidden;
+}
+
+.streamlit-expanderHeader {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    color: var(--text-primary) !important;
+    background: var(--surface) !important;
+    padding: 14px 18px !important;
+}
+
+.streamlit-expanderHeader:hover {
+    background: #f8fafc !important;
+}
+
+/* ─── Métricas ───────────────────────────────────────────── */
+[data-testid="stMetricValue"] {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--text-primary) !important;
+    font-weight: 700 !important;
+    font-size: 1.6rem !important;
+}
+
+[data-testid="stMetricLabel"] {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: var(--text-secondary) !important;
+}
+
+[data-testid="stMetric"] {
+    background: var(--surface) !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius-lg) !important;
+    padding: 16px 20px !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+/* ─── Alerts / info / success / warning / error ──────────── */
+[data-testid="stAlert"] {
+    border-radius: var(--radius-lg) !important;
+    border-width: 1.5px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+}
+
+/* ─── Progress bar ───────────────────────────────────────── */
+[data-testid="stProgressBar"]>div {
+    background: var(--border) !important;
+    border-radius: 99px !important;
+    height: 10px !important;
+}
+
+[data-testid="stProgressBar"]>div>div {
+    background: var(--primary) !important;
+    border-radius: 99px !important;
+}
+
+/* ─── Dataframe / data editor ────────────────────────────── */
+[data-testid="stDataFrame"],
+[data-testid="stDataEditor"] {
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius-lg) !important;
+    overflow: hidden !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+/* ─── File uploader ──────────────────────────────────────── */
+[data-testid="stFileUploader"] {
+    border: 2px dashed var(--border-dark) !important;
+    border-radius: var(--radius-lg) !important;
+    background: var(--surface) !important;
+    padding: 16px !important;
+    transition: border-color 0.15s !important;
+}
+
+[data-testid="stFileUploader"]:hover {
+    border-color: var(--primary) !important;
+}
+
+/* ─── Camera input ───────────────────────────────────────── */
+[data-testid="stCameraInput"] {
+    width: 100% !important;
+}
+
+[data-testid="stCameraInput"] video {
+    border-radius: var(--radius-lg) !important;
+    border: 2px solid var(--primary) !important;
+    width: 100% !important;
+}
+
+[data-testid="stCameraInput"] button {
+    background: var(--primary) !important;
+    color: white !important;
+    border-radius: var(--radius) !important;
+    min-height: 48px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+}
+
+/* ─── Multiselect ────────────────────────────────────────── */
+[data-testid="stMultiSelect"] [data-baseweb="select"] {
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    background: var(--surface) !important;
+}
+
+/* ─── Spinners y toasts ──────────────────────────────────── */
+[data-testid="stStatusWidget"] {
+    border-radius: var(--radius-lg) !important;
+}
+
+/* ─── Dividers ───────────────────────────────────────────── */
+hr {
+    border-color: var(--border) !important;
+    margin: 1.2rem 0 !important;
+}
+
+/* ─── Stitch Card Components (usados en st.markdown) ─────── */
+.stitch-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.18s ease;
+}
+
+.stitch-card:hover {
+    box-shadow: var(--shadow);
+}
+
+.stitch-hero {
+    background: var(--surface);
+    border-bottom: 1.5px solid var(--border);
+    padding: 20px 0 24px;
+    margin-bottom: 24px;
+}
+
+.stitch-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.stitch-badge.success {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.stitch-badge.warning {
+    background: var(--warning-bg);
+    color: var(--warning);
+}
+
+.stitch-badge.error {
+    background: var(--error-bg);
+    color: var(--error);
+}
+
+.stitch-badge.primary {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.stitch-report-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.18s ease;
+}
+
+.stitch-report-card:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow);
+}
+
+.stitch-quick-action-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    padding: 18px;
+    border-radius: var(--radius-xl);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-primary);
+    transition: all 0.18s ease;
+    border: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.stitch-quick-action-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    background: var(--surface);
+    color: var(--primary);
+    padding: 14px;
+    border-radius: var(--radius-xl);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid rgba(0, 86, 178, 0.2);
+    transition: all 0.18s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.stitch-section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 14px 0;
+}
+
+.stitch-step-bar {
+    background: var(--border);
+    border-radius: 99px;
+    height: 6px;
+    overflow: hidden;
+}
+
+.stitch-step-bar-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+
+.stitch-info-box {
+    background: var(--primary-light);
+    border: 1px solid rgba(0, 86, 178, 0.12);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+/* ─── Mobile Utilities (Stitch V2 / V3 Premium) ───────────────────────── */
+/* Premium Layout Fixes */
+div:has(> div > #bottom-nav-marker) {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    z-index: 999;
+    padding: 12px 16px 24px 16px;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+div:has(> div > #bottom-nav-marker) button {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--text-secondary) !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+}
+
+div:has(> div > #bottom-nav-marker) button:hover,
+div:has(> div > #bottom-nav-marker) button:focus,
+div:has(> div > #bottom-nav-marker) button:active {
+    color: var(--primary) !important;
+    background: transparent !important;
+}
+
+.bottom-nav-spacer {
+    height: 90px;
+}
+
+/* Premium Recent Reports */
+.stitch-recent-report {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.stitch-recent-report-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stitch-recent-report-meta {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.stitch-recent-report-status {
+    padding: 4px 8px;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.stitch-recent-report-status.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.stitch-recent-report-status.warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Grid V3 */
+.stitch-mobile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stitch-mobile-action-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.stitch-mobile-action-card:active {
+    transform: scale(0.96);
+    background: #f8fafc;
+}
+
+.stitch-mobile-action-card .material-symbols-outlined {
+    font-size: 32px;
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: 12px;
+    border-radius: 50%;
+}
+
+.stitch-mobile-action-title {
+    font-size: 14px;
+    font-weight: 700 !important;
+    color: var(--text-primary) !important;
+    margin: 0 !important;
+}
+
+.stitch-floating-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    padding: 16px;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 999;
+}
+
+.stitch-floating-btn {
+    width: 100%;
+    background: var(--primary);
+    color: white !important;
+    border: none;
+    border-radius: var(--radius-xl);
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 8px 20px rgba(0, 86, 178, 0.25);
+}
+
+/* ─── Padding extra para content cuando hay floating bar ──── */
+.has-floating-bar {
+    padding-bottom: 90px !important;
+}
+
+/* ─── Stats Dashboard Cards ─────────────────────────────── */
+.stitch-stats-container {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.stitch-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.stitch-stat-number {
+    font-size: 32px;
+    font-weight: 800 !important;
+    line-height: 1;
+}
+
+.stitch-stat-number.warning {
+    color: var(--warning);
+}
+
+.stitch-stat-number.success {
+    color: var(--success);
+}
+
+.stitch-stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 700 !important;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary) !important;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .block-container {
+        padding-left: 0.8rem !important;
+        padding-right: 0.8rem !important;
+    }
+
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+
+    [data-testid="stHorizontalBlock"]>[data-testid="stColumn"] {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    [data-testid="stRadio"]>div {
+        flex-direction: column !important;
+    }
+
+    [data-testid="stDataEditor"] {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .stButton>button {
+        width: 100% !important;
+    }
+
+    [data-testid="stFileUploader"] {
+        min-height: 80px;
+    }
+
+    .stTextInput>div>div>input {
+        font-size: 16px !important;
+        padding: 12px 14px !important;
+    }
+
+    .stTextArea>div>div>textarea {
+        font-size: 15px !important;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .block-container {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
+
+/* ─── Alertas y Paneles Específicos ───────────────────────── */
+.stitch-alert-warning {
+    border-radius: var(--radius-xl);
+    border: 1px solid #fde68a;
+    /* amber-200 */
+    background-color: #fffbeb;
+    /* amber-50 */
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.stitch-alert-warning .material-symbols-outlined {
+    color: #d97706;
+    /* amber-600 */
+}
+
+.stitch-alert-warning-title {
+    color: #78350f;
+    /* amber-900 */
+    font-size: 14px;
+    font-weight: 700 !important;
+    margin: 0 0 4px 0 !important;
+}
+
+.stitch-alert-warning-text {
+    color: #92400e;
+    /* amber-800 */
+    font-size: 14px;
+    margin: 0 !important;
+    line-height: 1.5;
+}
+
+/* ─── Panel de Éxito Generado ────────────────────────────── */
+.stitch-success-icon-container {
+    position: relative;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+    padding-top: 32px;
+}
+
+.stitch-success-icon-bg {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    background-color: rgba(34, 197, 94, 0.2);
+    border-radius: 9999px;
+    filter: blur(16px);
+    transform: scale(2);
+}
+
+.stitch-success-icon {
+    position: relative;
+    background-color: #16a34a;
+    /* green-600 */
+    color: white;
+    border-radius: 9999px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.2);
+}
+
+.stitch-success-icon .material-symbols-outlined {
+    font-size: 48px;
+    font-variation-settings: 'wght' 700;
+}
+
+.stitch-success-title {
+    font-size: 24px !important;
+    font-weight: 800 !important;
+    text-align: center;
+    margin-bottom: 8px !important;
+    color: var(--text-primary) !important;
+    text-transform: uppercase;
+    letter-spacing: -0.025em;
+}
+
+.stitch-success-text {
+    color: var(--text-secondary) !important;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 320px;
+    margin: 0 auto 32px auto !important;
+}
+
+/* ─── Tarjeta de Datos ───────────────────────────────────── */
+.stitch-data-card {
+    background-color: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: 32px;
+}
+
+.stitch-data-card-header {
+    background-color: #f8fafc;
+    /* slate-50 */
+    padding: 12px 16px;
+    border-bottom: 1.5px solid var(--border);
+}
+
+.stitch-data-card-title {
+    font-size: 10px;
+    font-weight: 700 !important;
+    color: var(--text-muted) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin: 0 !important;
+}
+
+.stitch-data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    /* slate-100 */
+}
+
+.stitch-data-row:last-child {
+    border-bottom: none;
+}
+
+.stitch-data-label {
+    font-size: 14px;
+    font-weight: 500 !important;
+    color: var(--text-secondary) !important;
+}
+
+.stitch-data-value {
+    font-size: 14px;
+    font-weight: 700 !important;
+    color: var(--text-primary) !important;
+    margin: 0 !important;
+}
+
+.stitch-data-value.highlight {
+    color: var(--primary) !important;
+    font-family: monospace;
+}

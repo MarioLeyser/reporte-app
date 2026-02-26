@@ -1,0 +1,285 @@
+/* ============================================
+   Vista Previa del Reporte — Estilos
+   ============================================ */
+
+.preview-container {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 30px;
+    margin: 15px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    color: #1a1a1a;
+    line-height: 1.5;
+}
+
+.preview-header {
+    text-align: center;
+    border-bottom: 2px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.preview-header h1 {
+    font-size: 18pt;
+    margin: 10px 0 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.preview-header .format-code {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #444;
+}
+
+.preview-header .confidencial {
+    font-size: 8.5pt;
+    font-style: italic;
+    color: #666;
+    margin-top: 8px;
+}
+
+/* Tabla resumen */
+.preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.preview-table td {
+    border: 1px solid #333;
+    padding: 8px 10px;
+    vertical-align: top;
+}
+
+.preview-table .label-cell {
+    font-weight: bold;
+    background-color: #f0f0f0;
+    width: 22%;
+    text-transform: uppercase;
+    font-size: 9.5pt;
+}
+
+.preview-table .value-cell {
+    font-size: 10pt;
+}
+
+/* Secciones */
+.preview-section {
+    margin: 20px 0;
+}
+
+.preview-section h2 {
+    font-size: 13pt;
+    font-weight: bold;
+    border-bottom: 1px solid #999;
+    padding-bottom: 5px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    color: #222;
+}
+
+.preview-section h3 {
+    font-size: 11pt;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+/* Barra de progreso */
+.progress-bar-container {
+    background: #e9ecef;
+    border-radius: 6px;
+    height: 24px;
+    overflow: hidden;
+    margin: 8px 0;
+    position: relative;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+.progress-bar-fill.green {
+    background: linear-gradient(90deg, #28a745, #34ce57);
+}
+
+.progress-bar-fill.yellow {
+    background: linear-gradient(90deg, #e6a817, #f0c040);
+    color: #333;
+}
+
+.progress-bar-fill.red {
+    background: linear-gradient(90deg, #dc3545, #e85d6a);
+}
+
+.progress-info {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin: 8px 0;
+    font-size: 10pt;
+}
+
+.progress-info span {
+    font-weight: bold;
+}
+
+/* Semáforo de estado */
+.status-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+.status-badge.green {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.yellow {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.red {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Fotos */
+.preview-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.photo-card {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fafafa;
+}
+
+.photo-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.photo-card .photo-info {
+    padding: 10px;
+    font-size: 9.5pt;
+}
+
+.photo-card .photo-date {
+    font-weight: bold;
+    color: #555;
+    font-size: 8.5pt;
+    margin-bottom: 4px;
+}
+
+/* Tabla equipos */
+.preview-equipment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 9.5pt;
+}
+
+.preview-equipment-table th {
+    background: #e0e0e0;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #333;
+    padding: 6px 8px;
+    text-transform: uppercase;
+}
+
+.preview-equipment-table td {
+    border: 1px solid #333;
+    padding: 5px 8px;
+    text-align: center;
+}
+
+/* Listas numeradas */
+.preview-list {
+    margin: 8px 0;
+    padding-left: 25px;
+}
+
+.preview-list li {
+    margin-bottom: 4px;
+    text-align: justify;
+}
+
+/* Supervisor */
+.preview-supervisor {
+    margin-top: 20px;
+}
+
+.preview-supervisor table {
+    border-collapse: collapse;
+}
+
+.preview-supervisor td {
+    border: 1px solid #333;
+    padding: 8px 20px;
+    font-weight: bold;
+}
+
+/* Nota */
+.preview-note {
+    margin-top: 20px;
+    font-size: 8.5pt;
+    font-style: italic;
+    border-top: 1px dashed #999;
+    padding-top: 8px;
+    color: #666;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .preview-container {
+        padding: 15px 12px;
+    }
+
+    .preview-header h1 {
+        font-size: 14pt;
+    }
+
+    .preview-table .label-cell {
+        width: auto;
+        display: block;
+    }
+
+    .preview-photos {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-equipment-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .progress-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+}

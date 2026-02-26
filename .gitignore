@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+outputs/
+*.pdf
+*.tmp
+*.temp
+.DS_Store
+venv/
+.venv/
+.env
+tunnel.log
+debug_check*.txt
+.idea/

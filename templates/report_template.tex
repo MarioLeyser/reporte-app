@@ -1,0 +1,269 @@
+\documentclass[letterpaper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{parskip}
+\usepackage{ragged2e}
+\usepackage[T1]{fontenc}
+\usepackage{calc}
+
+% --- Márgenes iguales al PDF original ---
+\geometry{top=2.5cm, bottom=2.5cm, left=2cm, right=2cm}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.2}
+% Reducido un poco para dar más aire
+\renewcommand{\arraystretch}{1.3}
+
+% --- Configuración de encabezado y pie de página ---
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Encabezado para páginas interiores (con código de formato)
+% Encabezado para páginas interiores (con código de formato)
+\fancyhead[L]{\includegraphics[height=1.2cm]{(( assets_dir | replace("\\", "/") ))/logo.png}}
+\fancyhead[R]{\small \textbf{(( report.format_code ))}\\ \textbf{Formato}}
+\fancyfoot[L]{\small Versión 2}
+\fancyfoot[R]{\small REPORTE DE ACTIVIDADES Y EVENTOS - ICRT}
+
+% --- Estilo especial para la primera página ---
+\fancypagestyle{firstpage}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+% --- Comandos personalizados para datos variables ---
+\newcommand{\codigoformato}{(( report.format_code ))}
+\newcommand{\versiondoc}{(( report.version ))}
+\newcommand{\empresa}{ICRT}
+\newcommand{\revisadopor}{(( report.reviewed_by ))}
+\newcommand{\fecharevision}{(( report.review_date ))}
+\newcommand{\aprobadopor}{(( report.approved_by ))}
+\newcommand{\fechaaprobacion}{(( report.approve_date ))}
+\newcommand{\actividad}{(( report.activity ))}
+\newcommand{\tipoactividad}{(( report.activity_type ))}
+\newcommand{\lugar}{(( report.place ))}
+\newcommand{\fechainicio}{(( format_date(report.start_date) ))}
+\newcommand{\fechafin}{(( format_date(report.end_date) ))}
+\newcommand{\personal}{(( report.personnel | join(' - ') ))}
+\newcommand{\cliente}{(( report.client ))}
+\newcommand{\estado}{(( report.status ))}
+\newcommand{\conformidad}{(( report.client_approval ))}
+\newcommand{\resumen}{(( report.summary ))}
+\newcommand{\supervisor}{(( report.supervisor ))}
+\newcommand{\notareemplazo}{(( report.replacement_note ))}
+
+% --- Para las fotos: definir un contador y un entorno personalizado ---
+\newcounter{fotocount}
+\setcounter{fotocount}{0}
+\newcommand{\foto}[2]{% #1: ruta imagen, #2: descripción
+  \stepcounter{fotocount}%
+  \noindent
+  \begin{minipage}{\textwidth}
+    \small
+    \begin{tabularx}{\textwidth}{|X|}
+      \hline
+      \rowcolor[gray]{0.9} \textbf{FOTOGRAFÍA \arabic{fotocount}.-} \\
+      \hline
+      \centering \vspace{5pt} \includegraphics[max width=\dimexpr\textwidth-20pt, max height=7cm, keepaspectratio]{#1} \vspace{5pt} \tabularnewline
+      \hline
+      \RaggedRight #2 \\
+      \hline
+    \end{tabularx}
+  \end{minipage}
+  \par\vspace{15pt}
+}
+
+% --- Para agrupar fotos por fecha ---
+\newcommand{\accionesfecha}[1]{%
+  \noindent\textbf{ACCIONES TOMADAS #1}\par\vspace{5pt}
+}
+
+% Residuos removed
+
+% ---------------------------------------------------------
+\begin{document}
+
+%------------ PRIMERA PÁGINA (sin encabezado de código) ------------
+\thispagestyle{firstpage}
+
+% Bloque superior: Revisado / Aprobado
+% Bloque superior: Logo y Datos
+\noindent
+\begin{minipage}[t]{0.45\textwidth}
+    \vspace{0pt} 
+    \includegraphics[width=7.5cm]{(( assets_dir | replace("\\", "/") ))/logo.png}
+\end{minipage}%
+\begin{minipage}[t]{0.55\textwidth}
+    \vspace{0pt}
+    \begin{flushright}
+      \begin{tabular}{l}
+        \textbf{Formato} \\[5pt]
+        Revisado por: \revisadopor \\
+        Fecha: \fecharevision \\[3pt]
+        Aprobado por: \aprobadopor \\
+        Fecha: \fechaaprobacion
+      \end{tabular}
+    \end{flushright}
+\end{minipage}
+
+% Texto de confidencialidad
+\vspace{0.5cm}
+\noindent
+{\small\itshape
+Toda la información contenida en el presente documento es confidencial y de propiedad de \empresa, 
+estando prohibida su reproducción total o parcial sin autorización previa de la empresa.}
+
+\vspace{0.8cm}
+
+% Código de formato y versión (centrados)
+\begin{center}
+  \textbf{\Large \codigoformato} \\
+  \textbf{Versión \versiondoc} \\[5pt]
+  \textbf{\normalsize Código Único: (( report.unique_code ))}
+\end{center}
+
+\vspace{0.8cm}
+
+% Título principal
+\begin{center}
+  \textbf{\huge REPORTE DE ACTIVIDADES Y EVENTOS}
+\end{center}
+
+\vspace{0.8cm}
+
+% Nombres de revisores
+\begin{center}
+  \revisadopor \\[3pt]
+  \aprobadopor
+\end{center}
+
+\vspace{1cm}
+
+%------------ TABLA RESUMEN ------------
+\noindent
+\begin{small}
+\begin{tabularx}{\textwidth}{|>{\RaggedRight\bfseries}p{3.5cm}|X|>{\RaggedRight\bfseries}p{3cm}|X|}
+  \hline
+  ACTIVIDAD: & \multicolumn{3}{>{\RaggedRight\arraybackslash}p{\dimexpr\textwidth-3.5cm-2\tabcolsep-2\arrayrulewidth}|}{\actividad} \\
+  \hline
+  TIPO DE ACTIVIDAD: & \RaggedRight \tipoactividad & LUGAR: & \RaggedRight \lugar \\
+  \hline
+  FECHA Y HORA: & \RaggedRight \fechainicio\ al \fechafin & PERSONAL INVOLUCRADO: & \RaggedRight \personal \\
+  \hline
+  CLIENTE: & \RaggedRight \cliente & ESTADO: & \RaggedRight \estado \\
+  \hline
+  CONFORMIDAD DEL CLIENTE: & \multicolumn{3}{>{\RaggedRight\arraybackslash}p{\dimexpr\textwidth-3.5cm-2\tabcolsep-2\arrayrulewidth}|}{\conformidad} \\
+  \hline
+\end{tabularx}
+\end{small}
+
+\vspace{0.5cm}
+
+%------------ RESUMEN ------------
+\subsection*{## RESUMEN}
+\resumen
+
+\vspace{0.5cm}
+
+%------------ AVANCE DE OBRA ------------
+\subsubsection*{## AVANCE DEL PROYECTO}
+\noindent
+\textbf{Días Totales:} (( report.total_days )) \hspace{1cm}
+\textbf{Día Actual:} (( report.current_day )) \hspace{1cm}
+\textbf{Avance Esperado:} (( "%.1f"|format(report.expected_progress) ))\% \hspace{1cm}
+\textbf{Avance Real:} (( "%.1f"|format(report.actual_progress) ))\%
+
+\vspace{0.3cm}
+
+\noindent
+\textbf{Estado de Avance:} 
+[* if report.progress_status_color == "green" *]
+  \textcolor{green!60!black}{\textbf{\LARGE \textbullet \hspace{0.2cm} ÓPTIMO (Cumple o supera lo esperado)}}
+[* elif report.progress_status_color == "yellow" *]
+  \textcolor{yellow!90!black}{\textbf{\LARGE \textbullet \hspace{0.2cm} TOLERABLE (Ligeramente por debajo del promedio)}}
+[* else *]
+  \textcolor{red}{\textbf{\LARGE \textbullet \hspace{0.2cm} CRÍTICO (Retraso significativo)}}
+[* endif *]
+
+\vspace{0.5cm}
+
+%------------ EVIDENCIA FOTOGRÁFICA ------------
+[* for action_date, photos in photos_by_date.items() *]
+\accionesfecha{(( format_date(action_date) ))}
+[* for photo in photos *]
+\foto{(( photo.image_path | replace("\\", "/") ))}{(( photo.caption ))}
+[* endfor *]
+[* endfor *]
+
+\vspace{0.5cm}
+
+%------------ IV. EQUIPOS DE MEDICIÓN Y CONCLUSIONES ------------
+\subsection*{## IV. EQUIPOS DE MEDICIÓN Y CONCLUSIONES}
+
+\subsubsection*{## 4.1 EQUIPOS DE MEDICIÓN}
+\paragraph*{4.1.1 RELACIÓN DE EQUIPOS DE MEDICIÓN UTILIZADOS EN EL MANTENIMIENTO}
+
+{\small
+\begin{longtable}{|c|p{4cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|}
+  \hline
+  \textbf{ITEM} & \textbf{EQUIPO} & \textbf{MARCA} & \textbf{MODELO} & \textbf{SERIE} & \textbf{FECHA CALIBRACIÓN} \\
+  \hline
+  \endfirsthead
+  \hline
+  \textbf{ITEM} & \textbf{EQUIPO} & \textbf{MARCA} & \textbf{MODELO} & \textbf{SERIE} & \textbf{FECHA CALIBRACIÓN} \\
+  \hline
+  \endhead
+  [* for eq in report.equipment_list *]
+  (( eq.item )) & (( eq.name )) & (( eq.brand )) & (( eq.model )) & (( eq.serial )) & (( eq.calibration_date )) \\ \hline
+  [* endfor *]
+\end{longtable}
+}
+
+\vspace{0.5cm}
+
+\vspace{0.5cm}
+
+\subsubsection*{## 4.2 CONCLUSIONES Y OBSERVACIONES:}
+
+\begin{enumerate}[label=\arabic*.-, leftmargin=*]
+  [* for obs in report.observations *]
+  \item (( obs ))
+  [* endfor *]
+  [* for con in report.conclusions *]
+  \item (( con ))
+  [* endfor *]
+\end{enumerate}
+
+\vspace{0.8cm}
+
+%------------ SUPERVISOR ------------
+\noindent
+\begin{tabular}{|l|l|}
+  \hline
+  \textbf{Supervisor TGP} & \supervisor \\
+  \hline
+\end{tabular}
+
+\vspace{0.8cm}
+
+%------------ NOTA DE REEMPLAZO ------------
+{\itshape\small
+\notareemplazo
+}
+
+\end{document}

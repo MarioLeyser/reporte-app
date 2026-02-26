@@ -1,0 +1,181 @@
+/* Estilos para el PDF - replican fielmente el diseño del ejemplo */
+@page {
+    size: letter;
+    margin: 2cm 1.5cm;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    line-height: 1.4;
+    color: #000;
+}
+
+.document {
+    max-width: 100%;
+}
+
+/* Encabezado */
+.header {
+    border-bottom: 1px solid #000;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+.confidencial {
+    font-size: 9pt;
+    font-style: italic;
+    text-align: justify;
+    margin-bottom: 10px;
+}
+
+.codigo-version {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.titulo-reporte {
+    font-size: 16pt;
+    font-weight: bold;
+    text-align: center;
+    margin: 15px 0;
+    text-transform: uppercase;
+}
+
+.revisado-por {
+    font-size: 10pt;
+    margin-bottom: 10px;
+}
+
+/* Tabla resumen */
+.tabla-resumen {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.tabla-resumen td {
+    border: 1px solid #000;
+    padding: 6px 8px;
+    vertical-align: top;
+}
+
+.tabla-resumen .label {
+    font-weight: bold;
+    background-color: #f0f0f0;
+    width: 20%;
+}
+
+/* Encabezados de sección */
+h2, h3, h4 {
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 14pt;
+    border-bottom: 1px solid #000;
+    padding-bottom: 3px;
+}
+
+h3 {
+    font-size: 12pt;
+}
+
+h4 {
+    font-size: 11pt;
+    font-style: italic;
+}
+
+/* Sección de fotos */
+.acciones-fecha {
+    margin-top: 30px;
+    page-break-inside: avoid;
+}
+
+.foto-item {
+    display: flex;
+    margin-bottom: 25px;
+    align-items: flex-start;
+}
+
+.foto-imagen {
+    width: 280px;
+    margin-right: 20px;
+}
+
+.foto-imagen img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ccc;
+}
+
+.foto-descripcion {
+    flex: 1;
+    font-size: 10pt;
+    text-align: justify;
+}
+
+/* Tablas de equipos y residuos */
+.tabla-equipos, .tabla-residuos {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.tabla-equipos th,
+.tabla-equipos td,
+.tabla-residuos th,
+.tabla-residuos td {
+    border: 1px solid #000;
+    padding: 6px 4px;
+    font-size: 10pt;
+}
+
+.tabla-equipos th,
+.tabla-residuos th {
+    background-color: #e0e0e0;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Listas numeradas */
+ol {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    padding-left: 25px;
+}
+
+li {
+    margin-bottom: 5px;
+    text-align: justify;
+}
+
+/* Supervisor */
+.supervisor {
+    margin-top: 30px;
+    font-weight: bold;
+}
+
+.supervisor table {
+    border-collapse: collapse;
+    width: auto;
+}
+
+.supervisor td {
+    border: 1px solid #000;
+    padding: 8px 20px;
+}
+
+/* Nota de reemplazo */
+.replacement-note {
+    margin-top: 30px;
+    font-size: 9pt;
+    font-style: italic;
+    border-top: 1px dashed #999;
+    padding-top: 10px;
+    color: #555;
+}
