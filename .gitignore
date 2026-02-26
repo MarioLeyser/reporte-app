@@ -12,4 +12,5 @@ venv/
 tunnel.log
 debug_check*.txt
 .idea/
+.streamlit/secrets.toml
 # NO ignorar draft_local.json - outputs/ ya lo cubre

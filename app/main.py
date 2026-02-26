@@ -331,33 +331,14 @@ load_custom_css()
 # ────────────────────────────────────────────────
 # USUARIOS AUTORIZADOS
 # ────────────────────────────────────────────────
-USERS = {
-    "m.aucapoma":  {"password": "42184296.Miguel",   "nombre": "Miguel Aucapoma"},
-    "d.lavado":    {"password": "74028999.David",    "nombre": "David Lavado"},
-    "l.diaz":      {"password": "73210222.Luis",     "nombre": "Luis Diaz"},
-    "f.fernandez": {"password": "72971837.Freddy",   "nombre": "Freddy Fernandez"},
-    "o.diaz":      {"password": "73049606.Omar",     "nombre": "Omar Diaz"},
-    "g.arque":     {"password": "74303142.Gema",     "nombre": "Gema Arque"},
-    "k.ucancial":  {"password": "74096578.Karen",    "nombre": "Karen Ucancial"},
-    "p.arroyo":    {"password": "71437511.Pedro",    "nombre": "Pedro Arroyo"},
-    "j.churata":   {"password": "40006557.Johnny",   "nombre": "Johnny Churata"},
-    "h.reyes":     {"password": "76224016.Heider",   "nombre": "Heider Reyes"},
-    "l.medina":    {"password": "76588517.Luz",      "nombre": "Luz Medina"},
-    "a.diaz":      {"password": "73049608.Angel",    "nombre": "Angel Diaz"},
-    "d.cruz":      {"password": "74140788.Diego",    "nombre": "Diego Cruz"},
-    "j.moran":     {"password": "74618487.Julio",    "nombre": "Julio Moran"},
-    "y.basurto":   {"password": "71864901.Yhonatan", "nombre": "Yhonatan Basurto"},
-    "n.osorio":    {"password": "77219853.Nelson",   "nombre": "Nelson Osorio"},
-    "a.vilela":    {"password": "71479851.Angie",    "nombre": "Angie Vilela"},
-    "m.pacco":     {"password": "72533207.Melanie",  "nombre": "Melanie Pacco"},
-    "l.cruzado":   {"password": "41204226.Luis",     "nombre": "Luis Cruzado"},
-    "g.yahuarcani":{"password": "61021050.Geiner",   "nombre": "Geiner Yahuarcani"},
-    "c.celestino": {"password": "9651385.Carlos",    "nombre": "Carlos Celestino"},
-    "d.morales":   {"password": "75595366.Diego",    "nombre": "Diego Morales"},
-    "m.vilca":     {"password": "75869368.Mario",    "nombre": "Mario Vilca"},
-    "j.tincopa":   {"password": "75242865.Joe",      "nombre": "Joe Tincopa"},
-    "j.pizango":   {"password": "42829580.Jose",     "nombre": "Jose Pizango"},
-}
+# Se leen desde .streamlit/secrets.toml para seguridad
+try:
+    USERS = st.secrets["users"]
+except Exception:
+    # Fallback para desarrollo local si no hay secrets
+    USERS = {
+        "admin": {"password": "admin", "nombre": "Administrador Local"}
+    }
 
 # ────────────────────────────────────────────────
 # Session State Initialization

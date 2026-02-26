@@ -30,9 +30,21 @@ APPROVED_BY = "JUAN LLANOS"
 APPROVE_DATE = "10/10/2023"
 
 # Configuración de Nube (Nextcloud)
-CLOUD_URL = "https://webserver.taild7f3a5.ts.net"
-CLOUD_USER = "bot"
-CLOUD_PASS = "@marioleiser64"
+import streamlit as st
+
+def get_secret(path, default):
+    try:
+        parts = path.split('.')
+        val = st.secrets
+        for p in parts:
+            val = val[p]
+        return val
+    except Exception:
+        return default
+
+CLOUD_URL = get_secret("cloud.url", "https://webserver.taild7f3a5.ts.net")
+CLOUD_USER = get_secret("cloud.user", "bot")
+CLOUD_PASS = get_secret("cloud.password", "@marioleiser64")
 CLOUD_BASE_PATH = "/LasBambas"
 # Subcarpetas dentro del proyecto
 CLOUD_PHOTOS_PATH = f"{CLOUD_BASE_PATH}/Fotos"
