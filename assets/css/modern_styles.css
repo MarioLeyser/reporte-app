@@ -845,3 +845,88 @@ div:has(> div > #bottom-nav-marker) button:active {
     color: var(--primary) !important;
     font-family: monospace;
 }
+
+/* ─── Custom Arrow Icons & Overlap Fixes ────────────────── */
+._arrow_down,
+._arrow_Down,
+._arrow_up,
+._arrow_upward,
+._arrow_downward {
+    font-family: 'Material Symbols Outlined' !important;
+    font-size: 24px !important;
+    cursor: pointer;
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-indent: -9999px;
+    /* Hide text content */
+    width: 24px;
+    height: 24px;
+    overflow: hidden;
+    position: relative;
+}
+
+._arrow_down::before,
+._arrow_Down::before,
+._arrow_downward::before {
+    content: "keyboard_arrow_down";
+    text-indent: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+._arrow_up::before,
+._arrow_upward::before {
+    content: "keyboard_arrow_up";
+    text-indent: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Ensure fixed bottom nav doesn't overlap scrollable content */
+.main .block-container {
+    padding-bottom: 150px !important;
+    /* Increased padding for safety */
+}
+
+/* Aggressive cleanup for the reported "superposicion _arrow_Down" */
+/* If these strings appear as raw text inside buttons or divs, hide them or turn them into icons */
+div:contains("_arrow_"),
+span:contains("_arrow_"),
+button:contains("_arrow_") {
+    color: transparent !important;
+    font-size: 0 !important;
+}
+
+/* Fix for the specific strings mentioned by user */
+[data-testid="stMarkdown"] :contains("_arrow_High"),
+[data-testid="stMarkdown"] :contains("_arrow_Down"),
+[data-testid="stMarkdown"] :contains("_arrow_down") {
+    display: none !important;
+}
+
+/* Styling for Streamlit buttons used as icons */
+/* Note: :contains() is non-standard. We use a font-family trick.
+   If the button text is a ligature name, the font will replace it. */
+.stButton>button[kind="secondary"] {
+    transition: all 0.2s ease;
+}
+
+.stButton>button[kind="secondary"]:active {
+    transform: scale(0.95);
+}
+
+/* Specific fix for arrow overlap in lists */
+[data-testid="stVerticalBlock"]>div:has(button[key*="up_"]),
+[data-testid="stVerticalBlock"]>div:has(button[key*="down_"]) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

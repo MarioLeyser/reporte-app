@@ -24,7 +24,7 @@ class NextcloudService:
         No usa Session para evitar el error FileNotFoundError con proxies."""
         kwargs.setdefault("auth", self.auth)
         kwargs.setdefault("verify", self.verify)
-        kwargs.setdefault("timeout", 10)
+        kwargs.setdefault("timeout", 30)
         return requests.request(method, url, **kwargs)
 
     def _encoded_url(self, remote_path):

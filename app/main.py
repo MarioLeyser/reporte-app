@@ -1429,7 +1429,7 @@ def render_vista_previa():
 
         # --- Resumen ---
         st.markdown("#### 📝 Resumen")
-        st.markdown(data.get('summary', ''))
+        st.markdown(data.get('summary', ''), unsafe_allow_html=True)
 
         st.markdown("---")
 
@@ -1440,14 +1440,21 @@ def render_vista_previa():
             for idx_p, ph in enumerate(preview_photos_list):
                 with thumb_cols[idx_p % 3]:
                     if ph["type"] == "local" and ph.get("bytes"):
-                        st.image(ph["bytes"], caption=f"Foto {idx_p+1}: {ph.get('caption', '')[:40]}", use_column_width=True)
+                        try:
+                            st.image(ph["bytes"], caption=f"Foto {idx_p+1}: {ph.get('caption', '')[:40]}", use_column_width=True)
+                        except Exception as e:
+                            st.error(f"Error local: {ph['name']}")
                     elif ph["type"] == "cloud":
                         remote_path = f"{config.CLOUD_PHOTOS_PATH}/{ph['name']}"
-                        cloud_bytes = get_cached_photo(remote_path)
-                        if cloud_bytes:
-                            st.image(cloud_bytes, caption=f"Foto {idx_p+1}: {ph.get('caption', '')[:40]}", use_column_width=True)
-                        else:
-                            st.info(f"☁️ {ph['name']}")
+                        with st.status(f"☁️ Cargando {ph['name']}...", expanded=False):
+                            cloud_bytes = get_cached_photo(remote_path)
+                            if cloud_bytes:
+                                try:
+                                    st.image(cloud_bytes, caption=f"Foto {idx_p+1}: {ph.get('caption', '')[:40]}", use_column_width=True)
+                                except Exception as e:
+                                    st.error(f"Error imagen nube")
+                            else:
+                                st.error("No se pudo descargar la imagen")
                     st.caption(f"📅 {fmt_date(ph.get('date', ''))}")
         else:
             st.info("Sin evidencia fotográfica")
@@ -1563,7 +1570,7 @@ def render_vista_previa():
         for i, photo in enumerate(preview_photos):
             st.markdown(f"**Evidencia {i+1} — {'☁️ Nube' if photo['type'] == 'cloud' else '💻 Local'}**")
             
-            c_img, c_desc, c_actions = st.columns([1.5, 2, 0.5])
+            c_img, c_desc, c_actions = st.columns([1, 1.8, 0.6])
             
             with c_img:
                 if photo["type"] == "local":
