@@ -406,16 +406,16 @@ if "synced_hashes" not in st.session_state:
 # LISTA DE EQUIPOS PREDEFINIDOS
 # ────────────────────────────────────────────────
 EQUIPOS_PREDEFINIDOS = [
-    {"equipo": "MULTIMETRO", "marca": "SANWA", "modelo": "CD772", "serie": "19115000442"},
-    {"equipo": "MULTIMETRO", "marca": "AMPROBE", "modelo": "33XR-A", "serie": "20010105A"},
-    {"equipo": "PINZA AMPERIMETRICA", "marca": "REDLINE", "modelo": "PM2016A", "serie": "S/N"},
-    {"equipo": "PINZA AMPERIMETRICA", "marca": "FLUKE", "modelo": "375", "serie": "43931493"},
-    {"equipo": "PINZA AMPERIMETRICA", "marca": "AMPROBE", "modelo": "AMP-330", "serie": "17013235"},
-    {"equipo": "MEGOMETRO", "marca": "SANWA", "modelo": "MG1000", "serie": "21125400086"},
-    {"equipo": "TELUROMETRO", "marca": "SANWA", "modelo": "PDR4000", "serie": "21035302290"},
-    {"equipo": "EXPLOSIMETRO", "marca": "RKI", "modelo": "GX-3R", "serie": "418042128RN"},
-    {"equipo": "EXPLOSIMETRO", "marca": "KALLU ELECTRONIC", "modelo": "K-100A", "serie": "2108268"},
-    {"equipo": "OTDR", "marca": "F2H", "modelo": "FH5000", "serie": "E5FHAU1310"},
+    {"codigo": "Q101", "equipo": "MULTIMETRO", "marca": "SANWA", "modelo": "CD772", "serie": "19115000442"},
+    {"codigo": "Q102", "equipo": "MULTIMETRO", "marca": "AMPROBE", "modelo": "33XR-A", "serie": "20010105A"},
+    {"codigo": "Q103", "equipo": "PINZA AMPERIMETRICA", "marca": "REDLINE", "modelo": "PM2016A", "serie": "S/N"},
+    {"codigo": "Q104", "equipo": "PINZA AMPERIMETRICA", "marca": "FLUKE", "modelo": "375", "serie": "43931493"},
+    {"codigo": "Q105", "equipo": "PINZA AMPERIMETRICA", "marca": "AMPROBE", "modelo": "AMP-330", "serie": "17013235"},
+    {"codigo": "Q106", "equipo": "MEGOMETRO", "marca": "SANWA", "modelo": "MG1000", "serie": "21125400086"},
+    {"codigo": "Q107", "equipo": "TELUROMETRO", "marca": "SANWA", "modelo": "PDR4000", "serie": "21035302290"},
+    {"codigo": "Q108", "equipo": "EXPLOSIMETRO", "marca": "RKI", "modelo": "GX-3R", "serie": "418042128RN"},
+    {"codigo": "Q109", "equipo": "EXPLOSIMETRO", "marca": "KALLU ELECTRONIC", "modelo": "K-100A", "serie": "2108268"},
+    {"codigo": "Q110", "equipo": "OTDR", "marca": "F2H", "modelo": "FH5000", "serie": "E5FHAU1310"},
 ]
 
 # import time # Ya importado arriba
@@ -1055,6 +1055,7 @@ def render_formulario():
             fecha_inicio = st.date_input("Fecha inicio", datetime.now().date(), key="f_fi")
             fecha_fin = st.date_input("Fecha fin", datetime.now().date(), key="f_ff")
             personal = st.text_input("Personal involucrado", "Miguel Aucapoma, Luis Huayllani, Carlos Diaz", key="f_pers")
+            st.caption("⚠️ Formato: Nombre Apellido, separados por comas. Ej: Miguel Aucapoma, Luis Huayllani")
 
         with col2:
             cliente = st.text_input("Cliente", "Transportadora de Gas del Perú", key="f_cli")
@@ -1079,6 +1080,42 @@ def render_formulario():
             dia_actual = st.number_input("Día Actual", min_value=1, max_value=total_dias, value=1, key="f_da")
         with col_prog3:
             avance_real = st.number_input("Avance Real (%)", min_value=0.0, max_value=100.0, value=20.0, step=0.1, key="f_ar")
+
+        # ── Gráfica Avance Real vs Proyectado ──
+        avance_proyectado = round((dia_actual / total_dias) * 100, 1) if total_dias > 0 else 0
+        desfase = round(avance_real - avance_proyectado, 1)
+        desfase_color = "#16a34a" if desfase >= 0 else "#dc2626"
+        desfase_label = f"+{desfase}%" if desfase >= 0 else f"{desfase}%"
+        desfase_texto = "Adelantado" if desfase > 0 else ("En tiempo" if desfase == 0 else "Atrasado")
+
+        st.markdown(f"""
+        <div style="background:#fff; border:1.5px solid #e2e8f0; border-radius:14px; padding:16px; margin-top:12px;">
+            <p style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 12px;">Avance Real vs Proyectado</p>
+            <div style="display:flex; gap:12px; margin-bottom:12px;">
+                <div style="flex:1; text-align:center;">
+                    <p style="margin:0; font-size:24px; font-weight:800; color:#0056b2;">{avance_real}%</p>
+                    <p style="margin:0; font-size:11px; color:#64748b;">Real</p>
+                </div>
+                <div style="flex:1; text-align:center;">
+                    <p style="margin:0; font-size:24px; font-weight:800; color:#94a3b8;">{avance_proyectado}%</p>
+                    <p style="margin:0; font-size:11px; color:#64748b;">Proyectado</p>
+                </div>
+                <div style="flex:1; text-align:center;">
+                    <p style="margin:0; font-size:24px; font-weight:800; color:{desfase_color};">{desfase_label}</p>
+                    <p style="margin:0; font-size:11px; color:{desfase_color};">{desfase_texto}</p>
+                </div>
+            </div>
+            <div style="position:relative; height:28px; background:#e2e8f0; border-radius:99px; overflow:hidden;">
+                <div style="position:absolute; height:100%; width:{min(avance_proyectado, 100)}%; background:#cbd5e1; border-radius:99px;"></div>
+                <div style="position:absolute; height:100%; width:{min(avance_real, 100)}%; background:{'#16a34a' if desfase >= 0 else '#dc2626'}; border-radius:99px; opacity:0.85;"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:6px;">
+                <span style="font-size:10px; color:#94a3b8;">0%</span>
+                <span style="font-size:10px; color:#94a3b8;">Día {dia_actual} de {total_dias}</span>
+                <span style="font-size:10px; color:#94a3b8;">100%</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     # Resumen
     with st.expander("📄 Resumen de Actividad"):
@@ -1181,8 +1218,9 @@ def render_formulario():
     with st.expander("🔧 Equipos de Medición"):
         st.markdown("Agregue equipos desde la lista o edite la tabla.")
 
-        opciones_equipos = [f"{e['equipo']} - {e['marca']} - {e['modelo']}" for e in EQUIPOS_PREDEFINIDOS]
+        opciones_equipos = [f"[{e['codigo']}] {e['equipo']} - {e['marca']} - {e['modelo']} (S/N: {e['serie']})" for e in EQUIPOS_PREDEFINIDOS]
         seleccion = st.selectbox("Seleccionar Equipo", ["Seleccione un equipo..."] + opciones_equipos, key="f_sel_eq")
+        st.caption("💡 Cada equipo tiene un código único (ej: Q104). Verifique el sticker del equipo en campo.")
 
         col_btn1, col_btn2 = st.columns([1, 4])
         with col_btn1:
@@ -1192,6 +1230,7 @@ def render_formulario():
                     equipo_data = EQUIPOS_PREDEFINIDOS[idx]
                     nuevo_item = {
                         "item": len(st.session_state.equipos_list) + 1,
+                        "codigo": equipo_data["codigo"],
                         "equipo": equipo_data["equipo"],
                         "marca": equipo_data["marca"],
                         "modelo": equipo_data["modelo"],
@@ -1207,6 +1246,7 @@ def render_formulario():
             num_rows="dynamic",
             column_config={
                 "item": "Item",
+                "codigo": "Código",
                 "equipo": "Equipo",
                 "marca": "Marca",
                 "modelo": "Modelo",

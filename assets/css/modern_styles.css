@@ -68,6 +68,11 @@ header {
     max-width: 900px !important;
 }
 
+/* ─── Ocultar hint "Ctrl+Enter" en text_area (no útil en móvil) ── */
+.stTextArea [data-testid="InputInstructions"] {
+    display: none !important;
+}
+
 /* ─── Tipografía ─────────────────────────────────────────── */
 h1,
 h2,
@@ -851,7 +856,9 @@ div:has(> div > #bottom-nav-marker) button:active {
 ._arrow_Down,
 ._arrow_up,
 ._arrow_upward,
-._arrow_downward {
+._arrow_downward,
+._arrow_right,
+._arrow_Right {
     font-family: 'Material Symbols Outlined' !important;
     font-size: 24px !important;
     cursor: pointer;
@@ -897,19 +904,26 @@ div:has(> div > #bottom-nav-marker) button:active {
 }
 
 /* Aggressive cleanup for the reported "superposicion _arrow_Down" */
-/* If these strings appear as raw text inside buttons or divs, hide them or turn them into icons */
-div:contains("_arrow_"),
-span:contains("_arrow_"),
-button:contains("_arrow_") {
+/* We target classes that might be leaking text. Text-indent usually works. */
+._arrow_down,
+._arrow_Down,
+._arrow_up,
+._arrow_upward,
+._arrow_downward,
+._arrow_High,
+._arrow_right,
+._arrow_Right {
     color: transparent !important;
     font-size: 0 !important;
+    text-indent: -9999px !important;
+    overflow: hidden !important;
 }
 
-/* Fix for the specific strings mentioned by user */
-[data-testid="stMarkdown"] :contains("_arrow_High"),
-[data-testid="stMarkdown"] :contains("_arrow_Down"),
-[data-testid="stMarkdown"] :contains("_arrow_down") {
-    display: none !important;
+/* Fix for any potential lingering text in markdown */
+.stMarkdown div,
+.stMarkdown span {
+    /* If someone used these as literal text, it might be hard to target without :contains 
+       But we can try to hide them if they are in specific components */
 }
 
 /* Styling for Streamlit buttons used as icons */
