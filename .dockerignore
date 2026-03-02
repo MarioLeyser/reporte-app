@@ -1,0 +1,15 @@
+__pycache__/
+.venv/
+.git/
+.idea/
+.streamlit/
+*.log
+*.txt
+!requirements.txt
+!packages.txt
+!packages.txt
+outputs/
+test.pdf
+tests/
+Dockerfile
+docker-compose.yml

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  reporte-app:
+    build: .
+    container_name: reporte-app
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./outputs:/app/outputs
+      - ./app:/app/app
+      - ./config.py:/app/config.py
+      - ./assets:/app/assets
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
