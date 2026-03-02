@@ -851,60 +851,17 @@ div:has(> div > #bottom-nav-marker) button:active {
     font-family: monospace;
 }
 
-/* ─── Custom Arrow Icons & Overlap Fixes ────────────────── */
-._arrow_down,
-._arrow_Down,
-._arrow_up,
-._arrow_upward,
-._arrow_downward,
-._arrow_right,
-._arrow_Right {
-    font-family: 'Material Symbols Outlined' !important;
-    font-size: 24px !important;
-    cursor: pointer;
-    vertical-align: middle;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-indent: -9999px;
-    /* Hide text content */
-    width: 24px;
-    height: 24px;
-    overflow: hidden;
-    position: relative;
-}
+/* ─── Streamlit Expander Arrow Overlap Fix ──────────────── */
+/*
+   On Streamlit Cloud, the expander component renders internal
+   toggle-arrow text (e.g. "_arrow_right", "_arrow_down") that
+   leaks out as visible text overlapping the header label.
+   This section aggressively hides ALL such arrow text using
+   multiple strategies: class selectors, attribute selectors,
+   and structural selectors for the expander's internals.
+*/
 
-._arrow_down::before,
-._arrow_Down::before,
-._arrow_downward::before {
-    content: "keyboard_arrow_down";
-    text-indent: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-}
-
-._arrow_up::before,
-._arrow_upward::before {
-    content: "keyboard_arrow_up";
-    text-indent: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-}
-
-/* Ensure fixed bottom nav doesn't overlap scrollable content */
-.main .block-container {
-    padding-bottom: 150px !important;
-    /* Increased padding for safety */
-}
-
-/* Aggressive cleanup for the reported "superposicion _arrow_Down" */
-/* We target classes that might be leaking text. Text-indent usually works. */
+/* Strategy 1: Target arrow class names directly */
 ._arrow_down,
 ._arrow_Down,
 ._arrow_up,
@@ -912,23 +869,50 @@ div:has(> div > #bottom-nav-marker) button:active {
 ._arrow_downward,
 ._arrow_High,
 ._arrow_right,
-._arrow_Right {
+._arrow_Right,
+[class*="_arrow_"] {
     color: transparent !important;
     font-size: 0 !important;
+    line-height: 0 !important;
     text-indent: -9999px !important;
+    overflow: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    display: inline-block !important;
+    position: absolute !important;
+    pointer-events: none !important;
+}
+
+/* Strategy 2: Target Streamlit's expander icon containers */
+[data-testid="stExpander"] [data-testid="stExpanderToggleIcon"],
+[data-testid="stExpander"] svg+span,
+.streamlit-expanderHeader [data-testid="stExpanderToggleIcon"] {
     overflow: hidden !important;
 }
 
-/* Fix for any potential lingering text in markdown */
-.stMarkdown div,
-.stMarkdown span {
-    /* If someone used these as literal text, it might be hard to target without :contains 
-       But we can try to hide them if they are in specific components */
+/* Strategy 3: Ensure the expander header text is properly styled 
+   and any stray child text nodes are hidden via overflow */
+.streamlit-expanderHeader,
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] [data-testid="stMarkdownContainer"] {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* But allow wrapping for regular content INSIDE the expander body */
+[data-testid="stExpander"] [data-testid="stExpanderDetails"] [data-testid="stMarkdownContainer"],
+[data-testid="stExpander"] [data-testid="stExpanderDetails"] .stMarkdown {
+    white-space: normal !important;
+    overflow: visible !important;
+}
+
+/* Ensure fixed bottom nav doesn't overlap scrollable content */
+.main .block-container {
+    padding-bottom: 150px !important;
 }
 
 /* Styling for Streamlit buttons used as icons */
-/* Note: :contains() is non-standard. We use a font-family trick.
-   If the button text is a ligature name, the font will replace it. */
 .stButton>button[kind="secondary"] {
     transition: all 0.2s ease;
 }

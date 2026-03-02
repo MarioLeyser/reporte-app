@@ -11,12 +11,14 @@ import json
 from PIL import Image
 from datetime import datetime, date
 import config
+import plotly.graph_objects as go
 
 
 # ────────────────────────────────────────────────
 # AUTOSAVE LOCAL (JSON)
 # ────────────────────────────────────────────────
 LOCAL_DRAFT_PATH = os.path.join("outputs", "draft_local.json")
+HISTORY_PATH = os.path.join("outputs", "report_history.json")
 
 def save_local_draft():
     """Guarda el estado actual del formulario en un JSON local.
@@ -192,6 +194,17 @@ def load_custom_css():
         max-width: 1100px;
     }
 
+    /* === FEATURE 2: Cursor visible en editores de texto === */
+    .stTextArea > div > div > textarea,
+    .stTextInput > div > div > input {
+        caret-color: #0056b2 !important;
+    }
+
+    /* === FEATURE 2: Ocultar hint 'Ctrl+Enter' === */
+    [data-testid="InputInstructions"] {
+        display: none !important;
+    }
+
     /* === Mejoras generales === */
     .stTextInput > div > div > input,
     .stTextArea > div > div > textarea,
@@ -274,7 +287,9 @@ def load_custom_css():
         }
 
         .stTextArea > div > div > textarea {
-            font-size: 15px !important;
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+            caret-color: #0056b2 !important;
         }
 
         /* Imagen de evidencia full width */
@@ -316,6 +331,35 @@ def load_custom_css():
             background-color: #3b82f6 !important;
             color: white !important;
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Feature 10: Plotly chart responsive en móvil */
+        .js-plotly-plot {
+            width: 100% !important;
+        }
+
+        /* Feature 10: Number inputs touch-friendly */
+        .stNumberInput > div > div > input {
+            min-height: 44px !important;
+            font-size: 16px !important;
+            padding: 8px 12px !important;
+        }
+
+        /* Feature 10: Select boxes touch-size */
+        .stSelectbox > div > div {
+            min-height: 44px !important;
+            font-size: 16px !important;
+        }
+
+        /* Feature 10: Date inputs touch-size */
+        .stDateInput > div > div > input {
+            min-height: 44px !important;
+            font-size: 16px !important;
+        }
+
+        /* Feature 10: Prevent data loss on tab switch — keep form state visible */
+        .stApp {
+            -webkit-overflow-scrolling: touch;
         }
     }
 
@@ -400,6 +444,17 @@ if "last_upload_hashes" not in st.session_state:
 
 if "synced_hashes" not in st.session_state:
     st.session_state.synced_hashes = set()
+
+# Feature 8: Report history (local file persistence)
+if "report_history" not in st.session_state:
+    try:
+        if os.path.exists(HISTORY_PATH):
+            with open(HISTORY_PATH, "r", encoding="utf-8") as _hf:
+                st.session_state.report_history = json.load(_hf)
+        else:
+            st.session_state.report_history = []
+    except Exception:
+        st.session_state.report_history = []
 
 
 # ────────────────────────────────────────────────
@@ -697,6 +752,39 @@ def render_inicio():
         with col_nav3:
              if st.button("👤 Perfil", use_container_width=True, key="nav_prof_btn_st"):
                  st.toast("Página de perfil no implementada aún.")
+
+    # ── Feature 8: Historial de Reportes ──
+    with st.expander("📋 Historial de Reportes", expanded=False):
+        history = st.session_state.get("report_history", [])
+        if not history:
+            st.info("No hay reportes generados aún en esta sesión.")
+        else:
+            for h_idx, h in enumerate(reversed(history)):
+                h_col1, h_col2, h_col3 = st.columns([3, 1, 1])
+                with h_col1:
+                    st.markdown(f"**{h.get('name', 'Reporte')}**")
+                    st.caption(f"🕐 {h.get('timestamp', '')} · {h.get('size_kb', 0):.1f} KB")
+                with h_col2:
+                    h_pdf = h.get("pdf_path", "")
+                    if h_pdf and os.path.exists(h_pdf):
+                        with open(h_pdf, "rb") as _hpf:
+                            st.download_button("📥 PDF", data=_hpf.read(),
+                                               file_name=os.path.basename(h_pdf),
+                                               mime="application/pdf",
+                                               key=f"hist_dl_{h_idx}",
+                                               use_container_width=True)
+                    else:
+                        st.caption("No disponible")
+                with h_col3:
+                    if st.button("✏️ Editar", key=f"hist_edit_{h_idx}", use_container_width=True):
+                        # Restore form data from history
+                        h_data = h.get("form_data", {})
+                        for k, v in h_data.items():
+                            st.session_state[k] = v
+                        st.session_state.app_mode = "reporte"
+                        st.session_state.app_step = "formulario"
+                        st.rerun()
+                st.divider()
 
 def load_draft_to_session(draft_name):
     """Descarga un JSON de la nube y restaura el session_state."""
@@ -1049,13 +1137,24 @@ def render_formulario():
         col1, col2 = st.columns(2)
         with col1:
             actividad = st.text_input("Actividad", value="INTEGRACIÓN Y PUESTA EN SERVICIO DE PLACA LATERAL EN GABINETE DE CONTROL DE LA VÁLVULA XV-10020", key="f_actividad")
-            tipo_actividad = st.selectbox("Tipo de actividad",
+            tipo_actividad_sel = st.selectbox("Tipo de actividad",
                                           ["Mantenimiento", "Conexionado", "Cableado", "Instalación", "Canalizado", "Otros"], key="f_tipo")
+            # Feature 1: Input dinámico cuando se selecciona 'Otros'
+            if tipo_actividad_sel == "Otros":
+                tipo_actividad = st.text_input("Especifique el tipo de actividad", key="f_tipo_otros",
+                                                placeholder="Ej: Inspección, Calibración, Prueba...")
+                if not tipo_actividad:
+                    tipo_actividad = "Otros"
+            else:
+                tipo_actividad = tipo_actividad_sel
             lugar = st.text_input("Lugar", "Zona Costa", key="f_lugar")
             fecha_inicio = st.date_input("Fecha inicio", datetime.now().date(), key="f_fi")
             fecha_fin = st.date_input("Fecha fin", datetime.now().date(), key="f_ff")
-            personal = st.text_input("Personal involucrado", "Miguel Aucapoma, Luis Huayllani, Carlos Diaz", key="f_pers")
-            st.caption("⚠️ Formato: Nombre Apellido, separados por comas. Ej: Miguel Aucapoma, Luis Huayllani")
+            personal = st.text_input("Personal involucrado",
+                                      "AUCAPOMA Miguel, HUAYLLANI Luis, DIAZ Carlos",
+                                      key="f_pers",
+                                      help="Usar comas para separar nombres: Juan Pérez, María López")
+            st.caption("⚠️ Formato SIG: APELLIDO Nombre, separados por comas. Ej: AUCAPOMA Miguel, HUAYLLANI Luis")
 
         with col2:
             cliente = st.text_input("Cliente", "Transportadora de Gas del Perú", key="f_cli")
@@ -1073,46 +1172,59 @@ def render_formulario():
 
     # --- Avance del Proyecto ---
     with st.expander("📊 Avance del Proyecto"):
-        col_prog1, col_prog2, col_prog3 = st.columns(3)
+        col_prog1, col_prog2, col_prog3, col_prog4 = st.columns(4)
         with col_prog1:
             total_dias = st.number_input("Días Totales (100%)", min_value=1, value=5, key="f_td")
         with col_prog2:
             dia_actual = st.number_input("Día Actual", min_value=1, max_value=total_dias, value=1, key="f_da")
         with col_prog3:
             avance_real = st.number_input("Avance Real (%)", min_value=0.0, max_value=100.0, value=20.0, step=0.1, key="f_ar")
+        with col_prog4:
+            avance_proy_auto = round((dia_actual / total_dias) * 100, 1) if total_dias > 0 else 0
+            avance_proyectado = st.number_input("Avance Proyectado (%)", min_value=0.0, max_value=100.0,
+                                                  value=avance_proy_auto, step=0.1, key="f_ap")
 
-        # ── Gráfica Avance Real vs Proyectado ──
-        avance_proyectado = round((dia_actual / total_dias) * 100, 1) if total_dias > 0 else 0
+        # ── Gráfica Plotly: Avance Real vs Proyectado ──
         desfase = round(avance_real - avance_proyectado, 1)
         desfase_color = "#16a34a" if desfase >= 0 else "#dc2626"
         desfase_label = f"+{desfase}%" if desfase >= 0 else f"{desfase}%"
         desfase_texto = "Adelantado" if desfase > 0 else ("En tiempo" if desfase == 0 else "Atrasado")
 
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            name='Real', x=['Avance'], y=[avance_real],
+            marker_color='#0056b2', text=[f'{avance_real}%'], textposition='outside'
+        ))
+        fig.add_trace(go.Bar(
+            name='Proyectado', x=['Avance'], y=[avance_proyectado],
+            marker_color='#94a3b8', text=[f'{avance_proyectado}%'], textposition='outside'
+        ))
+        fig.update_layout(
+            barmode='group',
+            height=250,
+            margin=dict(l=20, r=20, t=40, b=20),
+            yaxis=dict(range=[0, 110], title='%'),
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(size=12)
+        )
+        st.plotly_chart(fig, use_container_width=True, key="plotly_progress")
+
+        # Resumen numérico
         st.markdown(f"""
-        <div style="background:#fff; border:1.5px solid #e2e8f0; border-radius:14px; padding:16px; margin-top:12px;">
-            <p style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 12px;">Avance Real vs Proyectado</p>
-            <div style="display:flex; gap:12px; margin-bottom:12px;">
-                <div style="flex:1; text-align:center;">
-                    <p style="margin:0; font-size:24px; font-weight:800; color:#0056b2;">{avance_real}%</p>
-                    <p style="margin:0; font-size:11px; color:#64748b;">Real</p>
-                </div>
-                <div style="flex:1; text-align:center;">
-                    <p style="margin:0; font-size:24px; font-weight:800; color:#94a3b8;">{avance_proyectado}%</p>
-                    <p style="margin:0; font-size:11px; color:#64748b;">Proyectado</p>
-                </div>
-                <div style="flex:1; text-align:center;">
-                    <p style="margin:0; font-size:24px; font-weight:800; color:{desfase_color};">{desfase_label}</p>
-                    <p style="margin:0; font-size:11px; color:{desfase_color};">{desfase_texto}</p>
-                </div>
+        <div style="display:flex; gap:12px; justify-content:center; margin-top:4px;">
+            <div style="text-align:center; padding:8px 16px; background:#f1f5f9; border-radius:10px;">
+                <p style="margin:0; font-size:20px; font-weight:800; color:#0056b2;">{avance_real}%</p>
+                <p style="margin:0; font-size:10px; color:#64748b;">Real</p>
             </div>
-            <div style="position:relative; height:28px; background:#e2e8f0; border-radius:99px; overflow:hidden;">
-                <div style="position:absolute; height:100%; width:{min(avance_proyectado, 100)}%; background:#cbd5e1; border-radius:99px;"></div>
-                <div style="position:absolute; height:100%; width:{min(avance_real, 100)}%; background:{'#16a34a' if desfase >= 0 else '#dc2626'}; border-radius:99px; opacity:0.85;"></div>
+            <div style="text-align:center; padding:8px 16px; background:#f1f5f9; border-radius:10px;">
+                <p style="margin:0; font-size:20px; font-weight:800; color:#94a3b8;">{avance_proyectado}%</p>
+                <p style="margin:0; font-size:10px; color:#64748b;">Proyectado</p>
             </div>
-            <div style="display:flex; justify-content:space-between; margin-top:6px;">
-                <span style="font-size:10px; color:#94a3b8;">0%</span>
-                <span style="font-size:10px; color:#94a3b8;">Día {dia_actual} de {total_dias}</span>
-                <span style="font-size:10px; color:#94a3b8;">100%</span>
+            <div style="text-align:center; padding:8px 16px; background:#f1f5f9; border-radius:10px;">
+                <p style="margin:0; font-size:20px; font-weight:800; color:{desfase_color};">{desfase_label}</p>
+                <p style="margin:0; font-size:10px; color:{desfase_color};">{desfase_texto} • Día {dia_actual}/{total_dias}</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1130,9 +1242,13 @@ def render_formulario():
         c_src1, c_src2 = st.columns(2)
         with c_src1:
             uploaded_files = st.file_uploader("Subir fotos locales", type=["jpg", "jpeg", "png"], accept_multiple_files=True, key="f_imgs")
+            # Feature 5: Auto-add photos on upload (no extra button)
             if uploaded_files:
-                if st.button("➕ Añadir fotos locales al reporte", use_container_width=True):
-                    for f in uploaded_files:
+                import hashlib
+                new_count = 0
+                existing_names = {p["name"] for p in st.session_state.form_photos if p["type"] == "local"}
+                for f in uploaded_files:
+                    if f.name not in existing_names:
                         f.seek(0)
                         bytes_data = f.read()
                         st.session_state.form_photos.append({
@@ -1143,7 +1259,10 @@ def render_formulario():
                             "caption": "Se realizó la instalación...",
                             "date": datetime.now().date()
                         })
-                    st.toast("✅ Fotos locales añadidas")
+                        existing_names.add(f.name)
+                        new_count += 1
+                if new_count > 0:
+                    st.toast(f"✅ {new_count} fotos locales añadidas automáticamente")
                     st.rerun()
         
         with c_src2:
@@ -1173,39 +1292,37 @@ def render_formulario():
             else:
                 st.info("Sin fotos en la nube aún. Usa 'Subida Rápida' para subir fotos.")
 
-        # --- Mostrar lista unificada de evidencias ---
+        # --- Feature 5: Mostrar thumbnails compactos ---
         if st.session_state.form_photos:
             st.markdown("---")
             st.subheader(f"🖼️ Evidencias en el reporte ({len(st.session_state.form_photos)})")
             
             to_delete_form = None
-            for idx, p in enumerate(st.session_state.form_photos):
-                st.markdown(f"**Evidencia {idx+1} - {p['type'].upper()}**")
-                c_img, c_desc, c_del = st.columns([1, 2, 0.3])
-                
-                with c_img:
-                    if p["type"] == "local":
-                        st.image(p["bytes"], use_column_width=True)
-                    else:
-                        remote_path = f"{config.CLOUD_PHOTOS_PATH}/{p['name']}"
-                        with st.spinner("Cargando nube..."):
+            # Thumbnail grid: 3 columns
+            num_cols = 3
+            for row_start in range(0, len(st.session_state.form_photos), num_cols):
+                cols_thumb = st.columns(num_cols)
+                for col_idx in range(num_cols):
+                    idx = row_start + col_idx
+                    if idx >= len(st.session_state.form_photos):
+                        break
+                    p = st.session_state.form_photos[idx]
+                    with cols_thumb[col_idx]:
+                        # Thumbnail image
+                        if p["type"] == "local":
+                            st.image(p["bytes"], width=150, caption=f"#{idx+1}")
+                        else:
+                            remote_path = f"{config.CLOUD_PHOTOS_PATH}/{p['name']}"
                             cloud_bytes = get_cached_photo(remote_path)
                             if cloud_bytes:
-                                st.image(cloud_bytes, use_column_width=True)
+                                st.image(cloud_bytes, width=150, caption=f"#{idx+1} ☁️")
                             else:
-                                st.error("No disponible")
-                
-                with c_desc:
-                    # Vincular directamente al session_state
-                    p["caption"] = st.text_input(f"Descripción", value=p["caption"], key=f"form_cap_{p['id']}")
-                    p["date"] = st.date_input(f"Fecha", value=p["date"], key=f"form_date_{p['id']}")
-                
-                with c_del:
-                    st.write("") # Alineación
-                    if st.button("🗑️", key=f"form_del_{p['id']}", help="Eliminar de la lista"):
-                        to_delete_form = idx
-                
-                st.divider()
+                                st.error("No disp.")
+                        # Caption and date
+                        p["caption"] = st.text_input("Desc.", value=p["caption"], key=f"form_cap_{p['id']}", label_visibility="collapsed")
+                        p["date"] = st.date_input("Fecha", value=p["date"], key=f"form_date_{p['id']}", label_visibility="collapsed")
+                        if st.button("🗑️ Quitar", key=f"form_del_{p['id']}", use_container_width=True):
+                            to_delete_form = idx
             
             if to_delete_form is not None:
                 st.session_state.form_photos.pop(to_delete_form)
@@ -1235,7 +1352,8 @@ def render_formulario():
                         "marca": equipo_data["marca"],
                         "modelo": equipo_data["modelo"],
                         "serie": equipo_data["serie"],
-                        "fecha_cal": datetime.now().strftime("%d/%m/%Y")
+                        "fecha_cal": datetime.now().strftime("%d/%m/%Y"),
+                        "certificado": ""
                     }
                     st.session_state.equipos_list.append(nuevo_item)
                     # Forzar persistencia inmediata
@@ -1251,7 +1369,8 @@ def render_formulario():
                 "marca": "Marca",
                 "modelo": "Modelo",
                 "serie": "Serie",
-                "fecha_cal": "Fecha Calibración"
+                "fecha_cal": "Fecha Calibración",
+                "certificado": "Nº Certificado"
             },
             key="editor_equipos"
         )
@@ -1271,6 +1390,23 @@ def render_formulario():
         unsafe_allow_html=True
     )
     st.session_state["local_draft_saved_at"] = _ts
+
+    # ── Feature 9: Auto-save cada 10 segundos vía JS ──
+    import streamlit.components.v1 as components
+    components.html("""
+    <script>
+    (function() {
+        if (window._autoSaveTimer) clearInterval(window._autoSaveTimer);
+        window._autoSaveTimer = setInterval(function() {
+            // Trigger a small interaction to force Streamlit rerun
+            var inputs = window.parent.document.querySelectorAll('input[type="text"]');
+            if (inputs.length > 0) {
+                inputs[0].dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }, 10000);
+    })();
+    </script>
+    """, height=0)
 
     # ── Botón Vista Previa (Móvil) ──
     st.markdown("---")
@@ -1311,6 +1447,7 @@ def render_formulario():
                 "total_days": total_dias,
                 "current_day": dia_actual,
                 "actual_progress": avance_real,
+                "projected_progress": avance_proyectado,
                 "base_filename": st.session_state.get("base_filename"),
                 "draft_version": st.session_state.get("draft_version", 0),
                 "unique_code": st.session_state.get("f_unique", "")
@@ -1323,6 +1460,10 @@ def render_formulario():
             form_data["equipment_model"] = [e["modelo"] for e in equipos_data]
             form_data["equipment_serial"] = [e["serie"] for e in equipos_data]
             form_data["equipment_cal_date"] = [e["fecha_cal"] for e in equipos_data]
+            form_data["equipment_certificate"] = [e.get("certificado", "") for e in equipos_data]
+
+            # Feature 7: Store form_data for JSON download
+            st.session_state.last_form_data = form_data
 
             if usar_vista_previa:
                 st.session_state.preview_data = form_data
@@ -1830,25 +1971,79 @@ def render_generado():
         </div>
         """, unsafe_allow_html=True)
 
-        st.download_button(
-            label="📥 Descargar PDF",
-            data=pdf_bytes,
-            file_name=os.path.basename(pdf_path),
-            mime="application/pdf",
-            use_container_width=True,
-            type="primary"
-        )
+        # Feature 7: Dual download — PDF + JSON
+        dl_col1, dl_col2 = st.columns(2)
+        with dl_col1:
+            st.download_button(
+                label="📥 Descargar PDF",
+                data=pdf_bytes,
+                file_name=os.path.basename(pdf_path),
+                mime="application/pdf",
+                use_container_width=True,
+                type="primary"
+            )
+        with dl_col2:
+            # JSON editable data
+            json_data = st.session_state.get("last_form_data", {})
+            if json_data:
+                # Serialize dates for JSON
+                json_export = {}
+                for k, v in json_data.items():
+                    if isinstance(v, date):
+                        json_export[k] = v.isoformat()
+                    elif isinstance(v, list):
+                        json_export[k] = [
+                            vi.isoformat() if isinstance(vi, date) else vi for vi in v
+                        ]
+                    else:
+                        json_export[k] = v
+                json_str = json.dumps(json_export, ensure_ascii=False, indent=2)
+                json_filename = os.path.basename(pdf_path).replace(".pdf", "_editable.json")
+                st.download_button(
+                    label="📝 Descargar JSON (editable)",
+                    data=json_str,
+                    file_name=json_filename,
+                    mime="application/json",
+                    use_container_width=True
+                )
+            else:
+                st.caption("Datos editables no disponibles.")
         
+        # Feature 8: Save to history
+        if not st.session_state.get("_history_saved_this_report"):
+            history_entry = {
+                "name": os.path.basename(pdf_path),
+                "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "pdf_path": pdf_path,
+                "size_kb": file_size_kb,
+                "form_data": {}
+            }
+            # Save basic form keys for edit/reopen
+            for key in ["f_actividad", "f_tipo", "f_lugar", "f_pers", "f_cli", "f_est",
+                        "f_conf", "f_sup", "f_cod", "f_nom", "f_resumen", "f_obs", "f_conc"]:
+                if key in st.session_state:
+                    history_entry["form_data"][key] = st.session_state[key]
+            st.session_state.report_history.append(history_entry)
+            # Persist to local file
+            try:
+                with open(HISTORY_PATH, "w", encoding="utf-8") as _hf:
+                    json.dump(st.session_state.report_history, _hf, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+            st.session_state._history_saved_this_report = True
+
         col1, col2 = st.columns(2)
         with col1:
             if st.button("📝 Crear Nuevo Reporte", use_container_width=True):
                 st.session_state.app_step = "formulario"
                 st.session_state.preview_data = {}
                 st.session_state.preview_images = []
+                st.session_state.pop("_history_saved_this_report", None)
                 st.rerun()
         with col2:
             if st.button("🏠 Volver al Menú Central", use_container_width=True):
                 st.session_state.app_mode = "inicio"
+                st.session_state.pop("_history_saved_this_report", None)
                 st.rerun()
     else:
         st.error("No se encontró el archivo PDF. Intente generar nuevamente.")
